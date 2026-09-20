@@ -1,11 +1,11 @@
-// Service worker template. The build replaces "trip-shell-0.1.0-mu795ywk" and ["./","./assets/index-BMi73wz3.js","./assets/maplibre-gl-DM7SJk9b.js","./assets/index-CHZSmODC.css","./assets/maplibre-gl-worker-BrB-eljs.js","./manifest.webmanifest","./icon.svg"].
+// Service worker template. The build replaces "trip-shell-0.1.0-mu9jk2hs" and ["./","./assets/index-BVKNdGzT.js","./assets/maplibre-gl-BRtB0x-G.js","./assets/index-D2A5d0sI.css","./assets/maplibre-gl-worker-BrB-eljs.js","./manifest.webmanifest","./icon.svg"].
 // - The page itself: network first, cached copy when offline (never stuck on an old build).
 // - Built files: cache first (their names change when their content changes).
 // - Anything from another origin (APIs, map tiles): not handled here.
 // Trip data does not live in this cache; it is stored in IndexedDB by the app.
 
-const CACHE = "trip-shell-0.1.0-mu795ywk";
-const PRECACHE = ["./","./assets/index-BMi73wz3.js","./assets/maplibre-gl-DM7SJk9b.js","./assets/index-CHZSmODC.css","./assets/maplibre-gl-worker-BrB-eljs.js","./manifest.webmanifest","./icon.svg"];
+const CACHE = "trip-shell-0.1.0-mu9jk2hs";
+const PRECACHE = ["./","./assets/index-BVKNdGzT.js","./assets/maplibre-gl-BRtB0x-G.js","./assets/index-D2A5d0sI.css","./assets/maplibre-gl-worker-BrB-eljs.js","./manifest.webmanifest","./icon.svg"];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));
@@ -30,8 +30,13 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE).then((cache) => cache.put('./', copy));
+          // Only a good page replaces the offline shell. A 404 or a 5xx served during a
+          // deployment is still a response, and storing it would leave the offline app
+          // showing the host's error page until the next successful online visit.
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put('./', copy));
+          }
           return response;
         })
         .catch(() => caches.match('./', { ignoreVary: true })),
