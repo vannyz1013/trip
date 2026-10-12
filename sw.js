@@ -1,12 +1,12 @@
-// Service worker template. The build replaces "trip-shell-0.1.0-mv58n18z" and ["./","./assets/index-ZCohTgCi.js","./assets/maplibre-gl-BRtB0x-G.js","./assets/index-BNG728a3.css","./assets/maplibre-gl-worker-BrB-eljs.js","./manifest.webmanifest","./icon.svg"].
+// Service worker template. The build replaces "trip-shell-0.1.0-mv58t2d7" and ["./","./assets/index-DS57TET8.js","./assets/maplibre-gl-BRtB0x-G.js","./assets/index-BNG728a3.css","./assets/maplibre-gl-worker-BrB-eljs.js","./manifest.webmanifest","./icon.svg"].
 // - The page itself: network first, cached copy when offline (never stuck on an old build).
 // - Built files: cache first (their names change when their content changes).
 // - Anything from another origin (APIs, map tiles): not handled here.
 // Trip data does not live in this cache; it is stored in IndexedDB by the app.
 
-const CACHE = "trip-shell-0.1.0-mv58n18z";
+const CACHE = "trip-shell-0.1.0-mv58t2d7";
 const CACHE_PREFIX = 'trip-shell-';
-const PRECACHE = ["./","./assets/index-ZCohTgCi.js","./assets/maplibre-gl-BRtB0x-G.js","./assets/index-BNG728a3.css","./assets/maplibre-gl-worker-BrB-eljs.js","./manifest.webmanifest","./icon.svg"];
+const PRECACHE = ["./","./assets/index-DS57TET8.js","./assets/maplibre-gl-BRtB0x-G.js","./assets/index-BNG728a3.css","./assets/maplibre-gl-worker-BrB-eljs.js","./manifest.webmanifest","./icon.svg"];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));
