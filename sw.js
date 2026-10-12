@@ -1,11 +1,12 @@
-// Service worker template. The build replaces "trip-shell-0.1.0-mv52w7t2" and ["./","./assets/index-bln0hq0d.js","./assets/maplibre-gl-BRtB0x-G.js","./assets/index-DPk6Iy3p.css","./assets/maplibre-gl-worker-BrB-eljs.js","./manifest.webmanifest","./icon.svg"].
+// Service worker template. The build replaces "trip-shell-0.1.0-mv58dixv" and ["./","./assets/index-CpEATsPn.js","./assets/maplibre-gl-BRtB0x-G.js","./assets/index-BNG728a3.css","./assets/maplibre-gl-worker-BrB-eljs.js","./manifest.webmanifest","./icon.svg"].
 // - The page itself: network first, cached copy when offline (never stuck on an old build).
 // - Built files: cache first (their names change when their content changes).
 // - Anything from another origin (APIs, map tiles): not handled here.
 // Trip data does not live in this cache; it is stored in IndexedDB by the app.
 
-const CACHE = "trip-shell-0.1.0-mv52w7t2";
-const PRECACHE = ["./","./assets/index-bln0hq0d.js","./assets/maplibre-gl-BRtB0x-G.js","./assets/index-DPk6Iy3p.css","./assets/maplibre-gl-worker-BrB-eljs.js","./manifest.webmanifest","./icon.svg"];
+const CACHE = "trip-shell-0.1.0-mv58dixv";
+const CACHE_PREFIX = 'trip-shell-';
+const PRECACHE = ["./","./assets/index-CpEATsPn.js","./assets/maplibre-gl-BRtB0x-G.js","./assets/index-BNG728a3.css","./assets/maplibre-gl-worker-BrB-eljs.js","./manifest.webmanifest","./icon.svg"];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));
@@ -15,7 +16,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith(CACHE_PREFIX) && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
@@ -35,7 +36,7 @@ self.addEventListener('fetch', (event) => {
           // showing the host's error page until the next successful online visit.
           if (response.ok) {
             const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put('./', copy));
+            event.waitUntil(caches.open(CACHE).then((cache) => cache.put('./', copy)));
           }
           return response;
         })
@@ -55,7 +56,7 @@ self.addEventListener('fetch', (event) => {
         fetch(request).then((response) => {
           if (response.ok) {
             const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put(request, copy));
+            event.waitUntil(caches.open(CACHE).then((cache) => cache.put(request, copy)));
           }
           return response;
         }),
